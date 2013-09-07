@@ -1,0 +1,107 @@
+#!/usr/bin/python
+from fractions import *
+
+
+class threeByThree:
+ def __init__(self,name,a00,a01,a02,a03,a10,a11,a12,a13,a20,a21,a22,a23):
+  self.a00=a00
+  self.a01=a01
+  self.a02=a02
+  self.a10=a10
+  self.a11=a11
+  self.a12=a12
+  self.a20=a20
+  self.a21=a21
+  self.a22=a22
+  self.matrix=[[a00,a01,a02,a03],[a10,a11,a12,a13],[a20,a21,a22,a23]]
+  self.filename="output_%s.tex"%name
+  with open(self.filename,"wb") as f:
+   f.write('''\documentclass[10pt]{article}
+\\usepackage{amsmath}
+\\usepackage{amsfonts}
+\\usepackage{amsthm}
+\\usepackage{amsopn}
+\\usepackage{amscd}
+\\usepackage{graphicx}
+\\usepackage{epstopdf, mathtools}
+
+\\begin{document}
+
+\\vspace{5mm}
+
+We are row reducing the augmented matrix:\\\\
+''')
+  self.output(" ")
+ def unit(self,row,column):
+  c=self.matrix[row][column]
+  constant=Fraction(self.matrix[row][column])
+  for j in range(len(self.matrix[row])):
+   self.matrix[row][j]=Fraction(self.matrix[row][j])/constant
+  self.output("$\\xrightarrow{{R_{%d} := \\frac{%d}{%d} \\times R_{%d}}}$"%(row+1,constant.denominator, constant.numerator,row+1)) 
+ def pivot(self,row,column):
+  for i in range(len(self.matrix)):
+   constant=Fraction(self.matrix[i][column])/Fraction(self.matrix[row][column])
+   c=float(self.matrix[i][column]/self.matrix[row][column])
+   if i!=row:
+    for j in range(len(self.matrix[i])):
+     self.matrix[i][j]=Fraction(self.matrix[i][j]) -(Fraction(self.matrix[row][j])*(constant))
+    self.output("$\\xrightarrow{R_{%d} := R_{%d} - \\frac{%d}{%d} \\times R_{%d}}$"%(i+1,i+1,constant.numerator,constant.denominator,row+1))
+ def column1(self):
+  if (self.matrix[0][0] != 0):
+   self.unit(0,0)
+   self.pivot(0,0)
+  elif (self.matrix[1][0] != 0):
+   self.unit(1,0)
+   self.pivot(1,0)
+  elif (self.matrix[2][0] != 0):
+   self.unit(2,0)
+   self.pivot(2,0)
+ def column2(self):
+  if (self.matrix[0][1] != 0 and self.matrix[0][0]==0):
+   self.unit(0,1)
+   self.pivot(0,1)
+  elif (self.matrix[1][1] != 0 and self.matrix[1][0]==0):
+   self.unit(1,1)
+   self.pivot(1,1)
+  elif (self.matrix[2][1] != 0 and self.matrix[2][0]==0):
+   self.unit(2,1)
+   self.pivot(2,1)
+ def column3(self):
+  if (self.matrix[0][2] != 0 and self.matrix[0][0]==0 and self.matrix[0][1]==0):
+   self.unit(0,2)
+   self.pivot(0,2)
+  elif (self.matrix[1][2] != 0 and self.matrix[1][0]==0 and self.matrix[1][1]==0):
+   self.unit(1,2)
+   self.pivot(1,2)
+  elif (self.matrix[2][2] != 0 and self.matrix[2][0]==0 and self.matrix[2][1]==0):
+   self.unit(2,2)
+   self.pivot(2,2)
+  with open(self.filename,"a") as f:
+   f.write('''\end{document}''')
+ def square(self):
+  for i in self.matrix:
+   print i
+ def output(self,string):
+  with open(self.filename,"a") as f:
+   f.write("\n\n\\vspace{5mm}\n\n"+string+"\n")
+   f.write(r"$\left[\begin{array}{ccc|c}"+"\n")
+   for i in range(len(self.matrix)):
+    for j in range(len(self.matrix[i])): 
+     if (self.matrix[i][j]).denominator==1:
+      if j<len(self.matrix[i])-1:
+       f.write("%d &"%int(self.matrix[i][j]))
+      else:
+       f.write("%d "%int(self.matrix[i][j]))
+     else:
+      if j<len(self.matrix[i])-1:
+       f.write("\\frac{%d}{%d} &"%(self.matrix[i][j].numerator,self.matrix[i][j].denominator))
+      else:
+       f.write("\\frac{%d}{%d} "%(self.matrix[i][j].numerator,self.matrix[i][j].denominator))
+    f.write(r"\\")
+    f.write("\n")
+   f.write(r"\end{array}\right]$"+"\n\\vspace{5mm}")
+ def solve(self):
+  self.column1()
+  self.column2()
+  self.column3()
+
