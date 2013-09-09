@@ -1,7 +1,8 @@
+#Licence: GPLv2; Copyright: Soumya Deepta Sanyal
+
 #!/usr/bin/python
 from fractions import *
 
-#Released under GPLv2 Licence. Copyright: Soumya Deepta Sanyal
 
 class threeByThree:
  def __init__(self,name,a00,a01,a02,a03,a10,a11,a12,a13,a20,a21,a22,a23):
@@ -36,14 +37,15 @@ We are row reducing the augmented matrix:\\\\
  def unit(self,row,column):
   c=self.matrix[row][column]
   constant=Fraction(self.matrix[row][column])
-  for j in range(len(self.matrix[row])):
-   self.matrix[row][j]=Fraction(self.matrix[row][j])/constant
-  self.output("$\\xrightarrow{{R_{%d} := \\frac{%d}{%d} \\times R_{%d}}}$"%(row+1,constant.denominator, constant.numerator,row+1)) 
+  if c !=1:
+   for j in range(len(self.matrix[row])):
+    self.matrix[row][j]=Fraction(self.matrix[row][j])/constant
+   self.output("$\\xrightarrow{{R_{%d} := \\frac{%d}{%d} \\times R_{%d}}}$"%(row+1,constant.denominator, constant.numerator,row+1)) 
  def pivot(self,row,column):
   for i in range(len(self.matrix)):
    constant=Fraction(self.matrix[i][column])/Fraction(self.matrix[row][column])
    c=float(self.matrix[i][column]/self.matrix[row][column])
-   if i!=row:
+   if i!=row and self.matrix[i][column]!=0:
     for j in range(len(self.matrix[i])):
      self.matrix[i][j]=Fraction(self.matrix[i][j]) -(Fraction(self.matrix[row][j])*(constant))
     self.output("$\\xrightarrow{R_{%d} := R_{%d} - \\frac{%d}{%d} \\times R_{%d}}$"%(i+1,i+1,constant.numerator,constant.denominator,row+1))
